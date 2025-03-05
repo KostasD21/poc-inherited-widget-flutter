@@ -1,5 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_poc_inherited_widget/general_expenses.dart';
+import 'package:flutter_poc_inherited_widget/travel_expenses.dart';
+import 'package:flutter_poc_inherited_widget/travel_period.dart';
 
+// Create an InheritedWidget to hold the state
+class HomePageInherited extends InheritedWidget {
+  final _MyHomePageState state;
+
+  const HomePageInherited({
+    Key? key,
+    required Widget child,
+    required this.state,
+  }) : super(key: key, child: child);
+
+  static _MyHomePageState of(BuildContext context) {
+    final result =
+        context.dependOnInheritedWidgetOfExactType<HomePageInherited>();
+    assert(result != null, 'No HomePageInherited found in context');
+    return result!.state;
+  }
+
+  @override
+  bool updateShouldNotify(HomePageInherited oldWidget) {
+    //return state != oldWidget.state;
+    return true;
+  }
+}
+
+// Make MyHomePage a StatefulWidget instead of InheritedWidget
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -18,14 +46,16 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
-  int _counter = 0;
+class _MyHomePageState extends State<MyHomePage>
+    with SingleTickerProviderStateMixin {
+  int totalAmount = 0;
+  TravelPeriod? currentTravel = TravelPeriod(1, 'London', 'GBP', 'Active');
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(_handleTabChange);
   }
 
@@ -47,60 +77,67 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
       // so that the display can reflect the updated values. If we changed
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
-      _counter++;
+    });
+  }
+
+  // Add methods that children can call to modify state
+  void addExpense(int amount) {
+    setState(() {
+      totalAmount += amount;
+    });
+  }
+
+  void updateExpense(int id, double amount) {
+    setState(() {
+      // Add your state modification logic here
+    });
+  }
+
+  void deleteCurrentTravel() {
+    setState(() {
+      // Reset or remove current travel period
+      currentTravel = null;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('POC'),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(icon: Icon(Icons.home)),
-            Tab(icon: Icon(Icons.beach_access)),
-            Tab(icon: Icon(Icons.travel_explore)),
-            Tab(icon: Icon(Icons.list)),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {},
+    return HomePageInherited(
+      state: this,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('POC'),
+          bottom: TabBar(
+            controller: _tabController,
+            tabs: const [
+              Tab(icon: Icon(Icons.home)),
+              Tab(icon: Icon(Icons.beach_access)),
+            ],
           ),
-        ],
-      ),
-      // Add Floating Action Button here
-      floatingActionButton: _tabController.index ==
-              0 // Only show in General tab
-          ? FloatingActionButton(
-              onPressed: () {},
-              elevation: 4, // Makes it float above the card
-              backgroundColor: Theme.of(context).primaryColor,
-              child: Icon(Icons.add, color: Colors.white, size: 32))
-          : _tabController.index == 1
-              ? FloatingActionButton(
-                  onPressed: () {},
-                  backgroundColor: Theme.of(context).primaryColor,
-                  child: const Icon(Icons.add, color: Colors.white, size: 32),
-                )
-              : null,
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      body: TabBarView(
-        controller: _tabController,
-        children: [
+        ),
+        // Add Floating Action Button here
+        floatingActionButton: FloatingActionButton(
+            onPressed: () {},
+            elevation: 4, // Makes it float above the card
+            backgroundColor: Theme.of(context).primaryColor,
+            child: const Icon(Icons.add, color: Colors.white, size: 32))
+        // : _tabController.index == 1
+        //     ? FloatingActionButton(
+        //         onPressed: () {},
+        //         backgroundColor: Theme.of(context).primaryColor,
+        //         child: const Icon(Icons.add, color: Colors.white, size: 32),
+        //       )
+        //     : null,
+        ,
+        floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+        body: TabBarView(controller: _tabController, children: const [
           GeneralExpensesTab(
+            generalExpenses: [1, 2, 3],
           ),
           TravelExpensesTab(
-          ),
-          VacationExpensesTab(
-
-          ),
-          WishlistProductTab(
-          ),
-        ],
+            travelExpenses: [1, 2, 3],
+          )
+        ]),
       ),
     );
   }
