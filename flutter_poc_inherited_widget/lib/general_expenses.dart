@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_poc_inherited_widget/homepage.dart';
+import 'package:get/get.dart';
+import 'package:flutter_poc_inherited_widget/home_controller.dart';
 
 class GeneralExpensesTab extends StatelessWidget {
   final List<int> generalExpenses;
@@ -11,34 +12,42 @@ class GeneralExpensesTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final homePageState = HomePageInherited.of(context);
+    // Get the controller
+    final controller = Get.find<HomeController>();
+    
     return Container(
       child: Column(
         children: [
           Text('General Expenses: $generalExpenses'),
-          Text('Total amount: ${homePageState.totalAmount}'),
+          // Use Obx to listen to changes
+          Obx(() => Text('Total amount: ${controller.totalAmount.value}')),
           ElevatedButton(
             onPressed: () {
-              homePageState.addExpense(100);
+              controller.addExpense(100);
             },
             child: const Text('Add Expense'),
           ),
-          if (homePageState.currentTravel != null)
-            Padding(
+          // Use Obx to listen to changes in currentTravel
+          Obx(() => controller.currentTravel.value != null
+            ? Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Card(
-                    child: ExpansionTile(
-                title: Row(children: [
-                  const SizedBox(width: 12),
-                  Text(
-                    homePageState.currentTravel!.location,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ]),
-              )))
+                  child: ExpansionTile(
+                    title: Row(children: [
+                      const SizedBox(width: 12),
+                      Text(
+                        controller.currentTravel.value!.location,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ]),
+                  )
+                )
+              )
+            : Container()
+          )
         ],
       ),
     );

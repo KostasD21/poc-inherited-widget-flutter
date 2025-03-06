@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_poc_inherited_widget/homepage.dart';
+import 'package:get/get.dart';
+import 'package:flutter_poc_inherited_widget/home_controller.dart';
 
 class TravelExpensesTab extends StatelessWidget {
   final List<int> travelExpenses;
@@ -11,36 +12,44 @@ class TravelExpensesTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final homePageState = HomePageInherited.of(context);
+    // Get the controller
+    final controller = Get.find<HomeController>();
+    
     return Stack(
       children: [
         Container(
           child: Column(
             children: [
               Text('Travel Expenses: $travelExpenses'),
-              Text('Total amount: ${homePageState.totalAmount}'),
+              // Use Obx to listen to changes
+              Obx(() => Text('Total amount: ${controller.totalAmount.value}')),
               ElevatedButton(
                 onPressed: () {
-                  homePageState.addExpense(100);
+                  controller.addExpense(100);
                 },
                 child: const Text('Add Expense'),
               ),
-              if (homePageState.currentTravel != null)
-              Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Card(
+              // Use Obx to listen to changes in currentTravel
+              Obx(() => controller.currentTravel.value != null
+                ? Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Card(
                       child: ExpansionTile(
-                    title: Row(children: [
-                      const SizedBox(width: 12),
-                      Text(
-                        homePageState.currentTravel!.location,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ]),
-                  )))
+                        title: Row(children: [
+                          const SizedBox(width: 12),
+                          Text(
+                            controller.currentTravel.value!.location,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ]),
+                      )
+                    )
+                  )
+                : Container()
+              )
             ],
           ),
         ),
@@ -49,11 +58,11 @@ class TravelExpensesTab extends StatelessWidget {
           bottom: 16.0,
           child: FloatingActionButton(
             onPressed: () {
-              homePageState.deleteCurrentTravel();
+              controller.deleteCurrentTravel();
             },
             backgroundColor: Colors.red,
             child: const Icon(Icons.delete),
-            heroTag: 'deleteButton', // Needed when you have multiple FABs
+            heroTag: 'deleteButton',
           ),
         ),
       ],
