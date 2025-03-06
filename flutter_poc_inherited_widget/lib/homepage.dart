@@ -56,40 +56,24 @@ class _MyHomePageState extends State<MyHomePage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _tabController.addListener(_handleTabChange);
+    //_tabController.addListener(_handleTabChange);
   }
 
   @override
   void dispose() {
-    _tabController.removeListener(_handleTabChange);
+    //_tabController.removeListener(_handleTabChange);
     _tabController.dispose();
     super.dispose();
   }
 
-  void _handleTabChange() {
-    setState(() {});
-  }
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-    });
-  }
+  // void _handleTabChange() {
+  //   setState(() {});
+  // }
 
   // Add methods that children can call to modify state
   void addExpense(int amount) {
     setState(() {
       totalAmount += amount;
-    });
-  }
-
-  void updateExpense(int id, double amount) {
-    setState(() {
-      // Add your state modification logic here
     });
   }
 
@@ -121,13 +105,6 @@ class _MyHomePageState extends State<MyHomePage>
             elevation: 4, // Makes it float above the card
             backgroundColor: Theme.of(context).primaryColor,
             child: const Icon(Icons.add, color: Colors.white, size: 32))
-        // : _tabController.index == 1
-        //     ? FloatingActionButton(
-        //         onPressed: () {},
-        //         backgroundColor: Theme.of(context).primaryColor,
-        //         child: const Icon(Icons.add, color: Colors.white, size: 32),
-        //       )
-        //     : null,
         ,
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         body: TabBarView(controller: _tabController, children: const [

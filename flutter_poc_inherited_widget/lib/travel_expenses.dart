@@ -50,8 +50,6 @@ class TravelExpensesTab extends StatelessWidget {
           child: FloatingActionButton(
             onPressed: () {
               homePageState.deleteCurrentTravel();
-              // Add delete functionality here
-              // You might want to add a method in HomePageInherited for this
             },
             backgroundColor: Colors.red,
             child: const Icon(Icons.delete),
